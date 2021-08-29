@@ -1,0 +1,245 @@
+CREATE OR REPLACE PROCEDURE FINARTYTL.MUH_SEL_SUBEICMALLISTESI_SP (p_SubeKodu IN NUMBER DEFAULT NULL,
+                                                        p_Tarih    IN VARCHAR2 DEFAULT NULL,  
+                                                        RC1      IN OUT Omwb_emulation.globalPkg.RCT1) AS  
+  
+  v_SubeKodu        NUMBER(5, 0) := p_SubeKodu;  
+  v_Tarih           DATE := to_date(p_Tarih, 'YYYYMMDD');  
+  v_Birim           varchar2(1);  
+  v_ArsivTarih      date;  
+  
+         
+  
+  
+ -- Production'dan 28.08.2007 tarihinde taþýndý. Naim Þahin  
+  
+  /* Genel Bilgiler  
+  Adi   : MUH_Sel_SubeIcmalListesi_sp  
+  Amac    : Bir subenin içmal raporu.  
+  Yazan/Tarih : NA 01.11.2002  
+  Table Access  : muh_hareket :S, muh_hareketdetay:S, gen_sube:S, gen_arsivtarih:S, yet_kullanici:S  
+  Dönen Bilgi : Bir subenin içmal raporu.  
+  */  
+  
+BEGIN  
+  
+  
+  
+  select sube_birim_drm  
+    into v_Birim  
+    from gen_sube  
+   where sube_sube_kd = v_SubeKodu;  
+  
+  select g.arsiv_tr  
+    into v_ArsivTarih  
+    from gen_arsivtarih g  
+   where g.arsivtipi = 'MUH1';  
+   if (v_Tarih >= v_ArsivTarih) then  
+      if v_Birim = 'B' then 
+
+	/* FARUK EKLENTI BASLAR*/
+
+	if v_SubeKodu=1394 and v_Tarih>= '16.03.2009' then
+
+		
+         		OPEN RC1 FOR  
+        		 select  
+               		Adi "KullaniciAdi",  
+               		Kodu "KullaniciKodu",  
+               		sum(borc) "FisParasalToplam",  
+               		sum(case when kasa > 0 then 1 else 0 end) "KasaFisAdet",  
+               		sum(case when kasa = 0 then 1 else 0 end) "MahsupFisAdet",  
+               		count(1) "ToplamfisAdedi"  
+          	from ( select onaykullanici_kd Kodu,  
+                         Yet_Ad || ' ' || Yet_Soyad as Adi,  
+                         m.muhasebe_ref,  
+                         sum(case when LEFT(hp_kd, 3) in ('010', '011') then 1 else 0 end) kasa,  
+                         sum(borc) borc  
+                    from muh_hareket m  
+                    join muh_hareketdetay d  
+                      on m.muhasebe_tr = d.muhasebe_tr  
+                     and m.muhasebesube_kd = d.muhasebesube_kd  
+                     and m.muhasebe_ref = d.muhasebe_ref  
+                    join YET_KULLANICIHAREKET y  
+                      on Onaykullanici_Kd = Yet_Kullanici_Kd  
+                   WHERE y.yet_birim = m.MuhasebeSube_Kd  
+                     and m.Muhasebe_Tr = v_Tarih  
+                     AND m.MuhasebeSube_Kd = v_SubeKodu  
+                     AND v_Tarih BETWEEN Y.YET_BASLANGIC_TR AND Y.YET_BITIS_TR  
+                   group by onaykullanici_kd, Yet_Ad || ' ' || Yet_Soyad, m.muhasebe_ref  
+                  having SUM(borc) <> 0)  
+         group by Adi,Kodu;  
+
+
+
+
+
+	else /* Eklenti biter */
+
+
+
+
+
+
+ 
+         OPEN RC1 FOR  
+         select  
+               Adi "KullaniciAdi",  
+               Kodu "KullaniciKodu",  
+               sum(borc) "FisParasalToplam",  
+               sum(case when kasa > 0 then 1 else 0 end) "KasaFisAdet",  
+               sum(case when kasa = 0 then 1 else 0 end) "MahsupFisAdet",  
+               count(1) "ToplamfisAdedi"  
+          from ( select kullanici_kd Kodu,  
+                         Yet_Ad || ' ' || Yet_Soyad as Adi,  
+                         m.muhasebe_ref,  
+                         sum(case when LEFT(hp_kd, 3) in ('010', '011') then 1 else 0 end) kasa,  
+                         sum(borc) borc  
+                    from muh_hareket m  
+                    join muh_hareketdetay d  
+                      on m.muhasebe_tr = d.muhasebe_tr  
+                     and m.muhasebesube_kd = d.muhasebesube_kd  
+                     and m.muhasebe_ref = d.muhasebe_ref  
+                    join YET_KULLANICIHAREKET y  
+                      on Kullanici_Kd = Yet_Kullanici_Kd  
+                   WHERE y.yet_birim = m.MuhasebeSube_Kd  
+                     and m.Muhasebe_Tr = v_Tarih  
+                     AND m.MuhasebeSube_Kd = v_SubeKodu  
+                     AND v_Tarih BETWEEN Y.YET_BASLANGIC_TR AND Y.YET_BITIS_TR  
+                   group by kullanici_kd, Yet_Ad || ' ' || Yet_Soyad, m.muhasebe_ref  
+                  having SUM(borc) <> 0)  
+         group by Adi,Kodu;  
+      else  
+         OPEN RC1 FOR  
+                   select  
+               Adi "KullaniciAdi",  
+               Kodu "KullaniciKodu",  
+               sum(borc) "FisParasalToplam",  
+               sum(case when kasa > 0 then 1 else 0 end) "KasaFisAdet",  
+               sum(case when kasa = 0 then 1 else 0 end) "MahsupFisAdet",  
+               count(1) "ToplamfisAdedi"  
+          from (  select kullanici_kd Kodu,  
+                         Yet_Ad || ' ' || Yet_Soyad as Adi,  
+                         m.muhasebe_ref,  
+                         sum(case when LEFT(hp_kd, 3) in ('010', '011') then 1 else 0 end) kasa,  
+                         sum(borc) borc  
+                    from muh_hareket m  
+                    join muh_hareketdetay d  
+                      on m.muhasebe_tr = d.muhasebe_tr  
+                     and m.muhasebesube_kd = d.muhasebesube_kd  
+                     and m.muhasebe_ref = d.muhasebe_ref  
+                    join YET_KULLANICIHAREKET y  
+                      on Kullanici_Kd = Yet_Kullanici_Kd  
+                   WHERE Yet_Sube = m.MuhasebeSube_Kd  
+                     and m.Muhasebe_Tr = v_Tarih  
+                     AND m.MuhasebeSube_Kd = v_SubeKodu  
+                                          AND v_Tarih BETWEEN Y.YET_BASLANGIC_TR AND Y.YET_BITIS_TR  
+                   group by kullanici_kd, Yet_Ad || ' ' || Yet_Soyad,m.muhasebe_ref  
+                  having SUM(borc) <> 0)  
+         group by Adi,Kodu;  
+     end if;
+
+     end if ; /* FARUK IF SONU*/   
+else  
+     if v_Birim = 'B' then
+
+
+
+
+	/* FARUK EKLENTI BASLAR*/
+
+	if v_SubeKodu=1394 and v_Tarih>= '16.03.2009' then
+
+		
+         		OPEN RC1 FOR  
+        		 select  
+               		Adi "KullaniciAdi",  
+               		Kodu "KullaniciKodu",  
+               		sum(borc) "FisParasalToplam",  
+               		sum(case when kasa > 0 then 1 else 0 end) "KasaFisAdet",  
+               		sum(case when kasa = 0 then 1 else 0 end) "MahsupFisAdet",  
+               		count(1) "ToplamfisAdedi"  
+          	from ( select onaykullanici_kd Kodu,  
+                         Yet_Ad || ' ' || Yet_Soyad as Adi,  
+                         m.muhasebe_ref,  
+                         sum(case when LEFT(hp_kd, 3) in ('010', '011') then 1 else 0 end) kasa,  
+                         sum(borc) borc  
+                    from muh_hareket m  
+                    join muh_hareketdetay d  
+                      on m.muhasebe_tr = d.muhasebe_tr  
+                     and m.muhasebesube_kd = d.muhasebesube_kd  
+                     and m.muhasebe_ref = d.muhasebe_ref  
+                    join YET_KULLANICIHAREKET y  
+                      on Onaykullanici_Kd = Yet_Kullanici_Kd  
+                   WHERE y.yet_birim = m.MuhasebeSube_Kd  
+                     and m.Muhasebe_Tr = v_Tarih  
+                     AND m.MuhasebeSube_Kd = v_SubeKodu  
+                     AND v_Tarih BETWEEN Y.YET_BASLANGIC_TR AND Y.YET_BITIS_TR  
+                   group by onaykullanici_kd, Yet_Ad || ' ' || Yet_Soyad, m.muhasebe_ref  
+                  having SUM(borc) <> 0)  
+         group by Adi,Kodu;  
+
+
+
+
+
+	else /* Eklenti biter */
+
+
+
+
+
+
+  
+         OPEN RC1 FOR  
+         select  
+               Adi "KullaniciAdi",  
+               Kodu "KullaniciKodu",  
+               sum(borc) "FisParasalToplam",  
+               sum(case when kasa > 0 then 1 else 0 end) "KasaFisAdet",  
+               sum(case when kasa = 0 then 1 else 0 end) "MahsupFisAdet",  
+               count(1) "ToplamfisAdedi"  
+          from (  select kullanici_kd Kodu,  
+                         Yet_Ad || ' ' || Yet_Soyad as Adi,  
+                         m.muhasebe_ref,  
+                         sum(case when LEFT(hp_kd, 3) in ('010', '011') then 1 else 0 end) kasa,  
+                         sum(borc) borc  
+                    from muh_harekettumarsiv_v m  
+                    join YET_KULLANICIHAREKET y  
+                      on Kullanici_Kd = Yet_Kullanici_Kd  
+                   WHERE y.yet_birim = m.MuhasebeSube_Kd  
+                     and m.Muhasebe_Tr = v_Tarih  
+                     AND m.MuhasebeSube_Kd = v_SubeKodu  
+                     AND v_Tarih BETWEEN Y.YET_BASLANGIC_TR AND Y.YET_BITIS_TR  
+                   group by kullanici_kd, Yet_Ad || ' ' || Yet_Soyad,m.muhasebe_ref  
+                  having SUM(borc) <> 0)  
+         group by Adi,Kodu;  
+      else  
+         OPEN RC1 FOR  
+         select  
+               Adi "KullaniciAdi",  
+               Kodu "KullaniciKodu",  
+               sum(borc) "FisParasalToplam",  
+               sum(case when kasa > 0 then 1 else 0 end) "KasaFisAdet",  
+               sum(case when kasa = 0 then 1 else 0 end) "MahsupFisAdet",  
+               count(1) "ToplamfisAdedi"  
+          from (  select kullanici_kd Kodu,  
+                         Yet_Ad || ' ' || Yet_Soyad as Adi,  
+                         muhasebe_ref,  
+                         sum(case when LEFT(hp_kd, 3) in ('010', '011') then 1 else 0 end) kasa,  
+                         sum(borc) borc  
+                    from muh_harekettumarsiv_v m  
+                    join YET_KULLANICIHAREKET y  
+                      on Kullanici_Kd = Yet_Kullanici_Kd  
+                   WHERE Yet_Sube = m.MuhasebeSube_Kd  
+                     and m.Muhasebe_Tr = v_Tarih  
+                     AND m.MuhasebeSube_Kd = v_SubeKodu  
+                     AND v_Tarih BETWEEN Y.YET_BASLANGIC_TR AND Y.YET_BITIS_TR  
+                   group by kullanici_kd, Yet_Ad || ' ' || Yet_Soyad,muhasebe_ref  
+                  having SUM(borc) <> 0)  
+         group by Adi,Kodu;  
+      end if;
+	end if;
+  
+end if;   
+  
+END;  

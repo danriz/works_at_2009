@@ -1,0 +1,252 @@
+SELECT ski_sube_kd,
+
+                      ank_nakitnoktasi_kd,
+
+                      SUM(SKI_TUTAR_TTR) SKI_TUTAR_TTR,
+
+                      ski_doviz_kd,
+
+                      SUM(ski_toplam_ttr) ski_toplam_ttr,
+
+                      ski_ihtiyacfazlalik_tr,
+
+                      SUM(ski_onay_ttr) ski_onay_ttr
+
+                 
+
+                  FROM (SELECT ST.SKI_REFERANS_NO,
+
+                           ski_sube_kd,
+
+                           ank_nakitnoktasi_kd,
+
+                           CASE
+
+                             WHEN SKI_BILDIRIM_KTGR = 'F' THEN
+
+                              -1 * SUM(SKI_TUTAR_TTR)
+
+                             WHEN SKI_BILDIRIM_KTGR = 'T' THEN
+
+                              SUM(SKI_TUTAR_TTR)
+
+                           END SKI_TUTAR_TTR,
+
+                           ski_doviz_kd,
+
+                            CASE
+
+                              WHEN SKI_BILDIRIM_KTGR = 'F' THEN
+
+                              CASE
+
+                                    WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                    ROUND((-1 * MIN(ski_toplam_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                   ELSE
+
+                                  NULL
+
+                                 END WHEN SKI_BILDIRIM_KTGR = 'T' THEN
+
+                           
+
+                                 CASE
+
+                                    WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                    ROUND((MIN(ski_toplam_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                   ELSE
+
+                                    NULL
+
+                                  END 
+
+                                         END ski_toplam_ttr,
+
+                           ski_ihtiyacfazlalik_tr,
+
+                           CASE
+
+                             WHEN SKI_BILDIRIM_KTGR = 'F' THEN
+
+                                              CASE
+
+                                    WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                       ROUND((-1 * MIN(ski_onay_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                                   ELSE
+
+                                    NULL
+
+                                  END
+
+                                WHEN SKI_BILDIRIM_KTGR = 'T' THEN
+
+                                               CASE
+
+                              WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                     ROUND((MIN(ski_onay_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                                   ELSE
+
+                                    NULL
+
+                                END
+
+                           END ski_onay_ttr
+
+                      
+
+                        FROM SKI_TALEPFAZLALIKBILDIRIM ST
+
+                        JOIN ski_talepfazlalikbildirimcpdty C ON ST.SKI_REFERANS_NO = C.SKI_REFERANS_NO
+
+                       WHERE SKI_DURUM_KD IN ('K', 'Y', 'H', 'FY', 'BY')
+
+                        AND SKI_SUBEDEVIRDURUM_KD <> 'I'
+
+                                         AND ski_ihtiyacfazlalik_tr BETWEEN '28.04.2009' AND '28.04.2009'
+
+                       GROUP BY ST.SKI_REFERANS_NO,
+
+                             SKI_SUBE_KD,
+
+                             ank_nakitnoktasi_kd,
+
+                             ski_bildirim_ktgr,
+
+                             ski_doviz_kd,
+
+                             ski_ihtiyacfazlalik_tr
+
+                      
+
+                      )
+
+                  GROUP BY SKI_SUBE_KD,
+
+                        ank_nakitnoktasi_kd,
+
+                        ski_doviz_kd,
+
+                        ski_ihtiyacfazlalik_tr
+
+
+
+----------------------------
+
+
+SELECT ST.SKI_REFERANS_NO,
+
+                           ski_sube_kd,
+
+                           ank_nakitnoktasi_kd,
+
+                           CASE
+
+                             WHEN SKI_BILDIRIM_KTGR = 'F' THEN
+
+                              -1 * SUM(SKI_TUTAR_TTR)
+
+                             WHEN SKI_BILDIRIM_KTGR = 'T' THEN
+
+                              SUM(SKI_TUTAR_TTR)
+
+                           END SKI_TUTAR_TTR,
+
+                           ski_doviz_kd,
+
+                            CASE
+
+                              WHEN SKI_BILDIRIM_KTGR = 'F' THEN
+
+                              CASE
+
+                                    WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                    ROUND((-1 * MIN(ski_toplam_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                   ELSE
+
+                                  NULL
+
+                                 END WHEN SKI_BILDIRIM_KTGR = 'T' THEN
+
+                           
+
+                                 CASE
+
+                                    WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                    ROUND((MIN(ski_toplam_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                   ELSE
+
+                                    NULL
+
+                                  END 
+
+                                         END ski_toplam_ttr,
+
+                           ski_ihtiyacfazlalik_tr,
+
+                           CASE
+
+                             WHEN SKI_BILDIRIM_KTGR = 'F' THEN
+
+                                              CASE
+
+                                    WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                       ROUND((-1 * MIN(ski_onay_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                                   ELSE
+
+                                    NULL
+
+                                  END
+
+                                WHEN SKI_BILDIRIM_KTGR = 'T' THEN
+
+                                               CASE
+
+                              WHEN NVL(MIN(ski_onay_ttr), 0) <> 0 THEN
+
+                                     ROUND((MIN(ski_onay_ttr) * SUM(SKI_TUTAR_TTR) / MIN(ski_onay_ttr)),2)
+
+                                                   ELSE
+
+                                    NULL
+
+                                END
+
+                           END ski_onay_ttr
+
+                      
+
+                        FROM SKI_TALEPFAZLALIKBILDIRIM ST
+
+                        JOIN ski_talepfazlalikbildirimcpdty C ON ST.SKI_REFERANS_NO = C.SKI_REFERANS_NO
+
+                       WHERE SKI_DURUM_KD IN ('K', 'Y', 'H', 'FY', 'BY')
+
+                        AND SKI_SUBEDEVIRDURUM_KD <> 'I'
+
+                        AND ski_ihtiyacfazlalik_tr BETWEEN '20.04.2009' AND '20.04.2009'
+
+                       GROUP BY ST.SKI_REFERANS_NO,
+
+                             SKI_SUBE_KD,
+
+                             ank_nakitnoktasi_kd,
+
+                             ski_bildirim_ktgr,
+
+                             ski_doviz_kd,
+
+                             ski_ihtiyacfazlalik_tr

@@ -1,0 +1,14 @@
+select * from apr_processdefinition where APR_PROCESSID='130'
+select * from apr_transactiondetail where APR_REFERENCE='1394020309000012'--APR_PROCESSID=130 and APR_BRANCHCODE=1394
+
+select * from yet_gruplarinekranyetkileri uk where uk.yet_grup_kod='5002' 
+
+select * from yet_kullanicigruplari where YET_GRUP_KOD in ('5100','5002')
+
+select * from yet_kullaniciningruplari where YET_KULLANICI_KOD in('UAKDEMIR','PDERECI','NUZER')
+
+select * from muh_hareket where MUHASEBE_TR='02.03.2009' and MUHASEBESUBE_KD='1394' and PROGRAM_KD='MUHTSFGE'--and KULLANICI_KD='UAKDEMIR'
+
+--where MUHASEBE_TR='02.03.2009' and BORC='21,45' and MUHASEBESUBE_KD='1394'--and PROGRAM_KD='MUHTSFGE' and MUHASEBESUBE_KD='1394'
+
+select * from yet_kullanici where YET_KULLANICI_KOD in ('UAKDEMIR','PDERECI','NUZER')

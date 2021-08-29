@@ -1,0 +1,24 @@
+select * from finartytl.ski_talepfazlalikbildirim kl where kl.ski_ihtiyacfazlalik_tr='06.01.2009'
+
+
+
+select * from gen_sube uj where uj.sube_mrkveznesb_drm='Y'
+
+
+select * from finartytl.ski_talepfazlalikbildirim kl where kl.ski_bildirim_tr='12.01.2009' --and 
+--kl.SKI_TALEPEDILENSUBE_KD ='1075' 
+
+
+
+select * from finartytl.ski_talepfazlalikbildirim dj where dj.ski_referans_no like '1749_TBP00002178'
+
+ in (
+'1749_TBP00002204',
+'1749_TBP00002178',
+'1749_TBP00002195',
+'1749_TBP00002199'
+
+)
+
+
+select * from PAR_OTMCACHEBILGISI 

@@ -1,0 +1,32 @@
+-- Add/modify columns 
+
+alter table GEN_SUBE add SUBE_YATIRIMFONU_DRM varchar2(1);
+
+-- Add comments to the columns 
+
+comment on column GEN_SUBE.SUBE_YATIRIMFONU_DRM
+
+  is 'Yatýrým Fonu Durumu E = EVET , H = HAYIR';
+
+-- Add/modify columns 
+
+alter table GEN_SUBELOG add SUBE_YATIRIMFONU_DRM varchar2(1);
+
+-- Add comments to the columns 
+
+comment on column GEN_SUBE.SUBE_YATIRIMFONU_DRM
+
+  is 'Yatýrým Fonu Durumu E = EVET , H = HAYIR';
+
+
+BEGIN 
+
+ 
+
+frm_callerinfo.SetSessionContext('BATCH',1,0,'BATCH','BATCH');
+
+UPDATE GEN_SUBE SET sube_yatirimfonu_drm = 'E' WHERE sube_sube_kd IN (2001, 2002,2003,2004,2005,2006,2007,2012,2013) ;
+
+UPDATE GEN_SUBE SET sube_yatirimfonu_drm = 'H' WHERE sube_sube_kd NOT IN (2001, 2002,2003,2004,2005,2006,2007,2012,2013);
+
+END;

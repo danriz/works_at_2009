@@ -1,0 +1,1 @@
+select a.*, b.YET_SUBE from yet_kullanicihareket a, yet_kullanici b where a.YET_BASLANGIC_TR='05.05.2009' and a.YET_BITIS_TR='31.12.2075'  and a.YET_KULLANICI_KD =b.YET_KULLANICI_KOD and b.YET_SUBE <> a.YET_SUBE

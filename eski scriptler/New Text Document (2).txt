@@ -1,0 +1,5 @@
+
+select * from Par_otmcachebilgisidetay uk where uk.par_cacheid_kd in ( select par_cacheid_kd from par_otmcachebilgisi ab
+
+where ab.par_cacheparametre_ad='FAIZ_SIKLIK'
+)
